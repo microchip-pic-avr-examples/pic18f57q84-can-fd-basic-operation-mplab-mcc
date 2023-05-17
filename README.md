@@ -1,8 +1,8 @@
 [![MCHP](images/microchip.png)](https://www.microchip.com)
 
-# CAN FD for the PIC18-Q84 Family of Microcontrollers
+# CAN FD Setup For the PIC18-Q84 Family of Microcontrollers
 
-This example project showcases the setup and use of the new CAN FD module on the PIC18-Q84 family of devices using MPLAB Code Configurator (MCC). This software speeds up the configuration time and hassle for settings such as Baud Rate, receive masks/filters, and handling receive/transmit FIFOs.
+This example project showcases the setup and use of the new CAN FD module on the PIC18-Q84 family of devices using MPLAB Code Configurator (MCC). This software speeds up the configuration time and hassle for settings such as baud rate, receive masks/filters, and handling receive/transmit FIFOs.
 
 The example functionality includes periodically transmitting CAN frames on 1 second intervals, echoing incoming messages with a specific message ID (0x111), and setting LEDs based on data with a different specific message ID (0x585).  
 
