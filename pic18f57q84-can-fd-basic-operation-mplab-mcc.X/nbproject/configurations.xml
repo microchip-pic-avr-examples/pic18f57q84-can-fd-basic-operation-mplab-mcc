@@ -44,11 +44,6 @@
             <itemPath>mcc_generated_files/can/src/can1.c</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <logicalFolder name="crc" displayName="crc" projectFiles="true">
-          <logicalFolder name="src" displayName="src" projectFiles="true">
-            <itemPath>mcc_generated_files/crc/src/crc.c</itemPath>
-          </logicalFolder>
-        </logicalFolder>
         <logicalFolder name="system" displayName="system" projectFiles="true">
           <logicalFolder name="src" displayName="src" projectFiles="true">
             <itemPath>mcc_generated_files/system/src/interrupt.c</itemPath>
