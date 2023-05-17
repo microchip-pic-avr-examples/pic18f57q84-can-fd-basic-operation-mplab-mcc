@@ -41,7 +41,6 @@
 #include "../system/clock.h"
 #include "../system/pins.h"
 #include "../can/can1.h"
-#include "../crc/crc.h"
 #include "../timer/tmr0.h"
 #include "../system/interrupt.h"
 
