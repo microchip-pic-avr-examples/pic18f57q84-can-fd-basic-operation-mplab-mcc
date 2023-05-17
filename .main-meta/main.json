@@ -4,7 +4,7 @@
     "content": {
         "metaDataVersion": "1.3.0",
         "name": "com.microchip.mcu8.mplabx.project.pic18f57q84-can-fd-basic-operation-mplab-mcc",
-        "version": " ",
+        "version": "1.0.0",
         "displayName": "CAN FD basic operation example using the PIC18F47Q84",
         "projectName": "pic18f57q84-can-fd-basic-operation-mplab-mcc",
         "shortDescription": "An example showing CAN FD operation on the PIC18-Q84 family of MCUs, showing baud rate setup, masks/filters, reception, and transmission using MCC generated code.",
@@ -38,10 +38,10 @@
         },
         "author": "Josh Booth",
         "peripherals": [
-            "CAN FD", "TIMER"
+            "CAN FD", "TMR"
         ],
         "keywords": [
-            "PIC18", "MCC"
+            "CAN", "CAN FD", "MCC"
         ],
         "additionalData": {
             "longDescription": {
