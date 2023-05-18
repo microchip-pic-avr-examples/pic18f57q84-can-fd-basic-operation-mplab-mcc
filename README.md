@@ -46,7 +46,7 @@ From there, click "Select MCC Melody" and finish. You will be met with the appli
 ![MCC Configuration Image](images/application_builder.png)
 
 ### Project Configuration:
-Before configuring CAN, change these other configuration settings. Configure the "Clock Control" module to use the external 10Mhz crystal oscillator, then the internal PLL to get an operating frequency of 40Mhz. (As mentioned in [TB3266](https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ProductBrief/90003266A.pdf) 10Mhz, 20Mhz, or 40Mhz are the CAN FD hardware supported speeds)
+Before configuring CAN, change these other configuration settings. Configure the "Clock Control" module to use the external 10Mhz crystal oscillator, then the internal PLL to get an operating frequency of 40Mhz. (As mentioned in [TB3266](https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ProductBrief/90003266A.pdf) 10Mhz, 20Mhz, or 40Mhz are the CAN FD hardware supported speeds). Note: do not turn on the "PLL Enable" toggle in Advanced Settings, as that is for peripheral PLL use.
 
 ![Clock Control Image](images/clock_control.png)
 
