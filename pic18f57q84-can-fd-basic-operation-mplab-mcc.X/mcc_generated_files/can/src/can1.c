@@ -11,7 +11,7 @@
 */
 
 /*
-© [2023] Microchip Technology Inc. and its subsidiaries.
+ï¿½ [2023] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -167,7 +167,7 @@ static void CAN1_FIFO2DefaultHandler(void)
             }
         }
     }
-    IO_RF3_LAT = ~(InternalMessage.data[0] & 0b1); // set if fist bit is 1 or 0
+    IO_RF3_LAT = ~(InternalMessage.data[0] & 0b1); // set if first bit is 1 or 0
 
 }
 

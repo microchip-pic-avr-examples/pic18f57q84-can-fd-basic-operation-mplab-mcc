@@ -96,7 +96,7 @@ Click the Generate button in MCC and it will generate the application code. You 
 ### Interrupt Code
 We need to implement 3 functions manually for each interrupt: the response for each FIFOs and the TMR0 interrupt code.
 
-Open `can1.c`. Include the neccessary pins header file at the top `#include "../../can/can1.h"` below the other includes. Create these 2 functions somewhere in `can1.c`:
+Open `can1.c`. Include the neccessary pins header file at the top `#include "../../../mcc_generated_files/system/pins.h"` below the other includes. Create these 2 functions somewhere in `can1.c`:
 ```c
 static void CAN1_FIFO1DefaultHandler(void)
 {
@@ -131,7 +131,7 @@ static void CAN1_FIFO2DefaultHandler(void)
             }
         }
     }
-    IO_RF3_LAT = ~(InternalMessage.data[0] & 0b1); // set if fist bit is 1 or 0
+    IO_RF3_LAT = ~(InternalMessage.data[0] & 0b1); // set if first bit is 1 or 0
 
 }
 ```
