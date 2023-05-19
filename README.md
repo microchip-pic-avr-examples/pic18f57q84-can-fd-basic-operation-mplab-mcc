@@ -143,7 +143,7 @@ void CAN1_FIFO2CustomHandler(void)
 
 }
 ```
-Every 1 second, send a message with the content 0x0011223344556677 with a nID of 0x100.
+Every 1 second, send a message with the content 0x0011223344556677 with an ID of 0x100.
 ```c
 void TMR0_CustomHandler(void){
     struct CAN_MSG_OBJ Transmission;  //create the CAN message object
@@ -161,14 +161,14 @@ void TMR0_CustomHandler(void){
     }  
 }
 ```
-Create a header file for these functions `canfd_interrupts.h` with the function prototypes so we can access them outside the `canfd_interrupts.c` file.
+Create a header file for these functions `canfd_interrupts.h` and include the function prototypes so we can access them outside the `canfd_interrupts.c` file.
 ```c
 void CAN1_FIFO1CustomHandler(void);
 void CAN1_FIFO2CustomHandler(void);
 void TMR0_CustomHandler(void);
 ```
 
-Finally, just setup your main function in `main.c`. First, SYSTEM_Initialize() runs the MCC generated code that sets all the neccessary registers for configuring the clock, pins, can, timers, etc. Next, after interrupts are enabled, we access the MCC generated functions that assign the function pointers for each of the relevant interrupt callbacks so they can access our custom functions.
+Finally, add a couple lines to your main function in `main.c`. First, SYSTEM_Initialize() runs the MCC generated code that sets all the neccessary registers and config bits for configuring the clock, pins, CAN, timers, etc. Next, after interrupts are enabled, we access the MCC generated functions that assign the function pointers for each of the relevant interrupt callbacks so they can access our custom functions.
 ```c
 #include "mcc_generated_files/system/system.h"
 #include "canfd_interrupts.h"
