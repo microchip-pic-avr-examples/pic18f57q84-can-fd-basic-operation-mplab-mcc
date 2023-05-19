@@ -33,8 +33,6 @@
 #include <xc.h>
 #include "../tmr0.h"
 #include "../../system/interrupt.h"
-#include "../../can/can1.h"
-
 
 volatile uint16_t timerTMR0ReloadVal16bit;
 
@@ -140,18 +138,5 @@ static void TMR0_DefaultOverflowCallback(void)
 {
     //Add your interrupt code here or
     //Use TMR0_OverflowCallbackRegister function to use Custom ISR
-    struct CAN_MSG_OBJ Transmission;  //create the CAN message object
-    uint8_t Transmit_Data[8]={0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77}; // data bytes
-    Transmission.field.brs=CAN_BRS_MODE; //Transmit the data bytes at data bit rate
-    Transmission.field.dlc=DLC_8; //8 data bytes
-    Transmission.field.formatType=CAN_FD_FORMAT; //CAN FD frames 
-    Transmission.field.frameType=CAN_FRAME_DATA; //Data frame
-    Transmission.field.idType=CAN_FRAME_STD; //Standard ID
-    Transmission.msgId=0x100; //ID of 0x100
-    Transmission.data=Transmit_Data; //transmit the data from the data bytes
-    if(CAN_TX_FIFO_AVAILABLE == (CAN1_TransmitFIFOStatusGet(CAN1_TXQ) & CAN_TX_FIFO_AVAILABLE))//ensure that the TXQ has space for a message
-    {
-        CAN1_Transmit(CAN1_TXQ, &Transmission); //transmit frame
-    }  
 }
 

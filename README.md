@@ -46,7 +46,7 @@ From there, click "Select MCC Melody" and finish. You will be met with the appli
 ![MCC Configuration Image](images/application_builder.png)
 
 ### Project Configuration:
-Before configuring CAN, change these other configuration settings. Configure the "Clock Control" module to use the external 10Mhz crystal oscillator, then the internal PLL to get an operating frequency of 40Mhz. (As mentioned in [TB3266](https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ProductBrief/90003266A.pdf) 10Mhz, 20Mhz, or 40Mhz are the CAN FD hardware supported speeds). Note: do not turn on the "PLL Enable" toggle in Advanced Settings, as that is for peripheral PLL use.
+Before configuring CAN, change these other configuration settings. Configure the "Clock Control" module to use the external 10MHz crystal oscillator, then the internal PLL to get an operating frequency of 40MHz. (As mentioned in [TB3266](https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ProductBrief/90003266A.pdf) 10MHz, 20MHz, or 40MHz are the CAN FD hardware supported speeds). Note: do not turn on the "PLL Enable" toggle in Advanced Settings, as that is for peripheral PLL use.
 
 ![Clock Control Image](images/clock_control.png)
 
@@ -62,7 +62,7 @@ The setup process has 5 sections. The first is clock setup. For this setup, conf
 
 ![CAN PLIB Image](images/can_plib.png)
 
-The second step is Bit Rate Settings. This configures the nominal and data bit rate (if applicable) based on FCAN. For this example, a 500 Kbps nominal rate and 2Mbps data rate are selected, the nominal bit rate having 80 TQs per bit, the data bit rate having 20 TQs per bit, and the sample point being 80% for both bit rates.
+The second step is Bit Rate Settings. This configures the nominal and data bit rate (if applicable) based on FCAN. For this example, a 500 Kbps nominal rate and 2Mbps data rate are selected, the nominal bit rate having 80 time quantas per bit, the data bit rate having 20 time quantas per bit, and the sample point being 80% for both bit rates.
 
 ![CAN Config Image 1](images/can_config1.png)
 
@@ -78,27 +78,33 @@ The fifth and final step is the Filter Object Settings. This allows for setup of
 ![CAN Config Image 4](images/can_config4.png)
 
 #### TMR0 Configuration:
-The last thing that needs configured in MCC is Timer 0. In the feature list, we wanted to "periodically transmitting CAN frames on 1 second intervals". We will use the TMR0 module to generate an interrupt every 1 second so that the periodic CAN FD messages can be sent. Add the TMR0 module from the device resources and configure it as follows. Similar the CAN FIFO interrupts, we will have to manually code the interrupt behavior later.
+After setting up CAN, we still need the 1 second timer since we wanted to periodically transmit CAN frames every 1 second. We will use the TMR0 module to generate an interrupt every 1 second. Add the TMR0 module from the device resources and configure it as follows. Similar to the CAN FIFO interrupts, we will have to manually code the interrupt behavior later.
 
 ![TMR0 Setup Image](images/tmr0.png)
 
 #### Pin Configuration:
-The final step is the setup which pins are inputs and outputs using the Pin Grid View. Setup PORTB0 as CANTX and PORTB3 as CANRX. Remember: JTAG has to be disabled for PORTB0 to work as CANTX.
+Now that the modules are setup, use the Pin Grid View to configure the pins as inputs and outputs. Setup PORTB0 as CANTX and PORTB3 as CANRX. Also, configure pin PORTF3 as an output to control the on-board LED.
 
-Also, configure pin PORTF3 as an output to control the on-board LED.
+Remember: JTAG has to be disabled for PORTB0 to work as CANTX.
 
-#### Pin Grid View Window:
 ![Pin Module Setup Image](images/pin_grid_view.png)
 
 
-Click the Generate button in MCC and it will generate the application code. You can now close MCC.
+The last thing you need to do is click the Generate button in MCC and it will generate the application code. You can now close MCC.
 
 ### Interrupt Code
-We need to implement 3 functions manually for each interrupt: the response for each FIFOs and the TMR0 interrupt code.
+After using MCC, we have a fully functional API to handle our CAN communication as well as a timer generating an interrupt every 1 second. We only need to implement 3 functions manually, 1 for each of the 2 FIFO's interrupts (since they generate an interrupt when they become not empty) and 1 for the TMR0 interrupt.
 
-Open `can1.c`. Include the neccessary pins header file at the top `#include "../../../mcc_generated_files/system/pins.h"` below the other includes. Create these 2 functions somewhere in `can1.c`:
+To do this, create a file named `canfd_interrupts.h`, then add the following content:
+
+Since the code we are about to write references the API's CAN objects and PIN definitions for easy access, we need to make sure we can access both.
 ```c
-static void CAN1_FIFO1DefaultHandler(void)
+#include "mcc_generated_files/can/can1.h"
+#include "mcc_generated_files/system/pins.h"`
+```
+The first FIFO responds to any message with an ID of 0x111 with a message ID of 0x222 and echos the content back
+```c
+void CAN1_FIFO1CustomHandler(void)
 {
     struct CAN_MSG_OBJ EchoMessage;  //create a message object for holding the data
     while(1)
@@ -117,8 +123,10 @@ static void CAN1_FIFO1DefaultHandler(void)
         CAN1_Transmit(CAN1_TXQ, &EchoMessage); //Send the message
     }
 }
-
-static void CAN1_FIFO2DefaultHandler(void)
+```
+The second FIFO toggles the LED on pin RF3 based on the least significant bit in the message with an ID 0x585.
+```c
+void CAN1_FIFO2CustomHandler(void)
 {
     struct CAN_MSG_OBJ InternalMessage; //create a message object for holding data
     while(1)
@@ -135,17 +143,9 @@ static void CAN1_FIFO2DefaultHandler(void)
 
 }
 ```
-Next, in `CAN1_RX_FIFO_Configuration()` (~line 514), setup the call back to these 2 functions 
-
+Every 1 second, send a message with the content 0x0011223344556677 with a nID of 0x100.
 ```c
-CAN1_FIFO1NotEmptyCallbackRegister(CAN1_FIFO1DefaultHandler);
-CAN1_FIFO2NotEmptyCallbackRegister(CAN1_FIFO2DefaultHandler);
-```
-Next, open `TMR0.c`. The last piece of code to add is what to do when the TMR0 interrupt occurs. First, include the neccessary CAN header at the top `#include "../../can/can1.h"`, then fill out this function that is in the bottom of `TMR0.c`:
-```c
-void TMR0_DefaultInterruptHandler(void){
-    //Add your interrupt code here or
-    //Use TMR0_OverflowCallbackRegister function to use Custom ISR
+void TMR0_CustomHandler(void){
     struct CAN_MSG_OBJ Transmission;  //create the CAN message object
     uint8_t Transmit_Data[8]={0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77}; // data bytes
     Transmission.field.brs=CAN_BRS_MODE; //Transmit the data bytes at data bit rate
@@ -161,9 +161,17 @@ void TMR0_DefaultInterruptHandler(void){
     }  
 }
 ```
-Finally, just setup your main function in `main.c`:
+Create a header file for these functions `canfd_interrupts.h` with the function prototypes so we can access them outside the `canfd_interrupts.c` file.
+```c
+void CAN1_FIFO1CustomHandler(void);
+void CAN1_FIFO2CustomHandler(void);
+void TMR0_CustomHandler(void);
+```
+
+Finally, just setup your main function in `main.c`. First, SYSTEM_Initialize() runs the MCC generated code that sets all the neccessary registers for configuring the clock, pins, can, timers, etc. Next, after interrupts are enabled, we access the MCC generated functions that assign the function pointers for each of the relevant interrupt callbacks so they can access our custom functions.
 ```c
 #include "mcc_generated_files/system/system.h"
+#include "canfd_interrupts.h"
 
 int main(void)
 {
@@ -175,13 +183,17 @@ int main(void)
     // Enable the Global Low Interrupts 
     INTERRUPT_GlobalInterruptLowEnable(); 
 
-
+    TMR0_OverflowCallbackRegister(TMR0_CustomHandler);
+    
+    CAN1_FIFO1NotEmptyCallbackRegister(CAN1_FIFO1CustomHandler);
+    CAN1_FIFO2NotEmptyCallbackRegister(CAN1_FIFO2CustomHandler);
+    
     while(1)
     {
     }    
 }
 ```
-The configuration of the project is done. Click Make and Program Device and your Q84 should be ready to send and receive CAN messages.
+The configuration of the project is now done. Click Make and Program Device and your Q84 should be ready to send and receive CAN messages.
 
 ## Operation
 

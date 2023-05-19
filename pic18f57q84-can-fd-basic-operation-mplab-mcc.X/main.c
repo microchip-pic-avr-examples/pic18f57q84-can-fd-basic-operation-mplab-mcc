@@ -10,7 +10,7 @@
  * @version MAIN Driver Version 1.0.0
 */
 
-#include "mcc_generated_files/system/system.h"
+
 
 
 /*
@@ -38,6 +38,9 @@
     Main application
 */
 
+#include "mcc_generated_files/system/system.h"
+#include "canfd_interrupts.h"
+
 int main(void)
 {
     SYSTEM_Initialize();
@@ -48,7 +51,11 @@ int main(void)
     // Enable the Global Low Interrupts 
     INTERRUPT_GlobalInterruptLowEnable(); 
 
-
+    TMR0_OverflowCallbackRegister(TMR0_CustomHandler);
+    
+    CAN1_FIFO1NotEmptyCallbackRegister(CAN1_FIFO1CustomHandler);
+    CAN1_FIFO2NotEmptyCallbackRegister(CAN1_FIFO2CustomHandler);
+    
     while(1)
     {
     }    

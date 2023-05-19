@@ -11,7 +11,7 @@
 */
 
 /*
-ï¿½ [2023] Microchip Technology Inc. and its subsidiaries.
+© [2023] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -33,7 +33,7 @@
 
 #include <string.h>
 #include "../can1.h"
-#include "../../../mcc_generated_files/system/pins.h"
+
 /**  
  * @name CAN Bus Receive FIFO Memory information
  * Macros for the CAN Bus Receive FIFO Memory.
@@ -132,44 +132,6 @@ static void (*CAN1_FIFO1NotEmptyHandler)(void) = NULL;
 static void (*CAN1_FIFO2NotEmptyHandler)(void) = NULL;
 
 static uint8_t rxMsgData[CAN1_RX_FIFO_MSG_DATA]; // CAN1 Receive FIFO Message object data field
-
-
-static void CAN1_FIFO1DefaultHandler(void)
-{
-    struct CAN_MSG_OBJ EchoMessage;  //create a message object for holding the data
-    while(1)
-    {
-        if(CAN1_ReceivedMessageCountGet() > 0) //check for received message
-        {
-            if(true == CAN1_Receive(&EchoMessage)) //receive the message
-            {
-                break;
-            }
-        }
-    }
-    EchoMessage.msgId=0x222; //Change the ID to 0x222 then echo the message back out
-    if(CAN_TX_FIFO_AVAILABLE == (CAN1_TransmitFIFOStatusGet(CAN1_TXQ) & CAN_TX_FIFO_AVAILABLE))
-    {
-        CAN1_Transmit(CAN1_TXQ, &EchoMessage); //Send the message
-    }
-}
-
-static void CAN1_FIFO2DefaultHandler(void)
-{
-    struct CAN_MSG_OBJ InternalMessage; //create a message object for holding data
-    while(1)
-    {
-        if(CAN1_ReceivedMessageCountGet() > 0) //check for received message
-        {
-            if(true == CAN1_Receive(&InternalMessage)) //receive the message
-            {
-                break;
-            }
-        }
-    }
-    IO_RF3_LAT = ~(InternalMessage.data[0] & 0b1); // set if first bit is 1 or 0
-
-}
 
 /**
  @ingroup  can_driver
@@ -530,9 +492,6 @@ static void CAN1_RX_FIFO_Configuration(void)
     // FSIZE 6; PLSIZE 32; 
     C1FIFOCON2T = 0xA5;
 
-    CAN1_FIFO1NotEmptyCallbackRegister(CAN1_FIFO1DefaultHandler);
-    CAN1_FIFO2NotEmptyCallbackRegister(CAN1_FIFO2DefaultHandler);
-    
 	C1INTUbits.RXIE = 1;
 
     PIR4bits.CANRXIF = 0;
@@ -548,27 +507,6 @@ static void CAN1_RX_FIFO_Configuration(void)
 static void CAN1_RX_FIFO_FilterMaskConfiguration(void)
 {
     /* Configure RX FIFO Filter control settings*/
-    
-    // message stored in FIFO2
-    C1FLTCON0Hbits.F1BP =  2;
-    // SID 133; 
-    C1FLTOBJ1L = 0x85;
-    // SID 5; EID 0; 
-    C1FLTOBJ1H = 0x5;
-    // EID 0; 
-    C1FLTOBJ1U = 0x0;
-    // EID 0; SID11 disabled; EXIDE disabled; 
-    C1FLTOBJ1T = 0x0;
-    // MSID 255; 
-    C1MASK1L = 0xFF;
-    // MSID 7; MEID 0; 
-    C1MASK1H = 0x7;
-    // MEID 0; 
-    C1MASK1U = 0x0;
-    // MEID 0; MSID11 disabled; MIDE enabled; 
-    C1MASK1T = 0x40;
-    // Enable the filter 1
-    C1FLTCON0Hbits.FLTEN1 = 1;
     
     // message stored in FIFO1
     C1FLTCON0Lbits.F0BP =  1;
@@ -590,6 +528,27 @@ static void CAN1_RX_FIFO_FilterMaskConfiguration(void)
     C1MASK0T = 0x40;
     // Enable the filter 0
     C1FLTCON0Lbits.FLTEN0 = 1;
+    
+    // message stored in FIFO2
+    C1FLTCON0Hbits.F1BP =  2;
+    // SID 133; 
+    C1FLTOBJ1L = 0x85;
+    // SID 5; EID 0; 
+    C1FLTOBJ1H = 0x5;
+    // EID 0; 
+    C1FLTOBJ1U = 0x0;
+    // EID 0; SID11 disabled; EXIDE disabled; 
+    C1FLTOBJ1T = 0x0;
+    // MSID 255; 
+    C1MASK1L = 0xFF;
+    // MSID 7; MEID 0; 
+    C1MASK1H = 0x7;
+    // MEID 0; 
+    C1MASK1U = 0x0;
+    // MEID 0; MSID11 disabled; MIDE enabled; 
+    C1MASK1T = 0x40;
+    // Enable the filter 1
+    C1FLTCON0Hbits.FLTEN1 = 1;
 }
 
 /**
@@ -716,16 +675,6 @@ void CAN1_Deinitialize(void)
         C1FIFOCON2T = 0x0;
         
         /* Reset RX FIFO Filter control settings to POR*/
-        C1FLTCON0Hbits.F1BP = 0x0;
-        C1FLTOBJ1L = 0x0;
-        C1FLTOBJ1H = 0x0;
-        C1FLTOBJ1U = 0x0;
-        C1FLTOBJ1T = 0x0;
-        C1MASK1L = 0x0;
-        C1MASK1H = 0x0;
-        C1MASK1U = 0x0;
-        C1MASK1T = 0x0;
-        C1FLTCON0Hbits.FLTEN1 = 0x0;
         C1FLTCON0Lbits.F0BP = 0x0;
         C1FLTOBJ0L = 0x0;
         C1FLTOBJ0H = 0x0;
@@ -736,6 +685,16 @@ void CAN1_Deinitialize(void)
         C1MASK0U = 0x0;
         C1MASK0T = 0x0;
         C1FLTCON0Lbits.FLTEN0 = 0x0;
+        C1FLTCON0Hbits.F1BP = 0x0;
+        C1FLTOBJ1L = 0x0;
+        C1FLTOBJ1H = 0x0;
+        C1FLTOBJ1U = 0x0;
+        C1FLTOBJ1T = 0x0;
+        C1MASK1L = 0x0;
+        C1MASK1H = 0x0;
+        C1MASK1U = 0x0;
+        C1MASK1T = 0x0;
+        C1FLTCON0Hbits.FLTEN1 = 0x0;
 
     }
     
