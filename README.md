@@ -39,16 +39,16 @@ This section is for first time MCC users. To start, create a new standalone proj
 From there, click "Select MCC Melody" and finish. You will be met with the application builder (highlighted in red). To configure a module, double click it from the Devices Resources (green) and it will:
 1. Move into Project Resources.
 2. Show up in the builder.
-3. Pull up its configuration window on the right where its configuration parameters can be changed.
+3. Pull up its configuration window on the right where the parameters can be changed.
 
- When ready, click the **Generate** button (yellow) to generate application code.
+ When ready, click the **Generate** button (yellow) to generate the application code.
 
 ![MCC Configuration Image](images/application_builder.png)
 
 ### Project Configuration
-Before configuring CAN, change these other configuration settings. Configure the "Clock Control" module to use the external 10 MHz crystal oscillator, then the internal Phase-Locked Loop (PLL) to get an operating frequency of 40 MHz. As mentioned in [TB3266](https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ProductBrief/90003266A.pdf), 10 MHz, 20 MHz, or 40 MHz are the CAN FD hardware supported speeds.
+Before configuring CAN, change these other configuration settings. Configure the "Clock Control" module to use the external 10 MHz crystal oscillator, then the internal Phase-Locked Loop (PLL) to get an operating frequency of 40 MHz. As mentioned in [TB3266](https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ProductBrief/90003266A.pdf), 10 MHz, 20 MHz or 40 MHz are the CAN FD hardware supported speeds.
 
-**Note:** do not turn on the "PLL Enable" toggle in Advanced Settings, as that is for peripheral PLL use.
+**Note:** Do not turn on the "PLL Enable" toggle in Advanced Settings, as that is for peripheral PLL use.
 
 ![Clock Control Image](images/clock_control.png)
 
@@ -91,10 +91,10 @@ Remember, JTAG has to be disabled for PORTB0 to work as CANTX.
 ![Pin Module Setup Image](images/pin_grid_view.png)
 
 
-The last step is to click the **Generate** button to generate the application code. MCC can now be closed
+The last step is to click the **Generate** button to generate the application code. MCC can now be closed.
 
 ### Interrupt Code
-After using MCC, we have a fully functional API to handle our CAN communication as well as a timer generating an interrupt every 1s. Three functions need to be implemented manually: one for each of the two FIFO interrupts, since they generate an interrupt when they become not empty, and 1 for the TMR0 1s interrupt.
+After using MCC, we have a fully functional API to handle our CAN communication as well as a timer generating an interrupt every 1s. Three functions need to be implemented manually: one for each of the two FIFO interrupts, since they generate an interrupt when they become not empty, and one for the TMR0 1s interrupt.
 
 To do this, create a file named `canfd_interrupts.h`, then add the content below.
 
@@ -169,7 +169,7 @@ void CAN1_FIFO2CustomHandler(void);
 void TMR0_CustomHandler(void);
 ```
 
-Finally, add a couple lines to the main function in `main.c`. First, `SYSTEM_Initialize()` runs the MCC generated code that sets all the neccessary registers and Configuration bits for configuring the clock, pins, CAN, timers, etc. Next, after interrupts are enabled, access the MCC generated functions that assign the function pointers for each of the relevant interrupt callbacks so they can access the custom functions.
+Finally, add a couple of lines to the main function in `main.c`. First, `SYSTEM_Initialize()` runs the MCC generated code that sets all the neccessary registers and Configuration bits for configuring the clock, pins, CAN, timers, etc. Next, after interrupts are enabled, access the MCC generated functions that assign the function pointers for each of the relevant interrupt callbacks so they can access the custom functions.
 ```c
 #include "mcc_generated_files/system/system.h"
 #include "canfd_interrupts.h"
@@ -194,11 +194,11 @@ int main(void)
     }    
 }
 ```
-The configuration of the project is now done. Click Make and Program Device and the Q84 is ready to send and receive CAN messages. [This guide](https://bitbucket.microchip.com/projects/EBE/repos/pic18f56q71-cnano-adccc-differential-reading-mplab-mcc/browse/README.md?at=3a57907c3485ba069d8631c96d28ff7ce8935456) shows how to make and program a device for the first time if needed.
+The configuration of the project is now done. Click **Make and Program Device** and the Q84 is ready to send and receive CAN messages. [This guide](https://bitbucket.microchip.com/projects/EBE/repos/pic18f56q71-cnano-adccc-differential-reading-mplab-mcc/browse/README.md?at=3a57907c3485ba069d8631c96d28ff7ce8935456) shows how to make and program a device for the first time if needed.
 
 ## Operation
 
-On Power-up, the code will periodically transmit messages with an ID of 0x100 and 8 bytes of data (data = 0x0011223344556677) every 1s.
+On power-up, the code will periodically transmit messages with an ID of 0x100 and 8 bytes of data (data = 0x0011223344556677) every 1s.
 
 ![CAN Periodic Transmission Image](images/can_messages.png)
 
@@ -206,7 +206,7 @@ Sending the Q84 a message with an ID of 0x111 will cause the device to respond w
 
 ![CAN Echo Transmisson Image](images/can_echo.png)
 
-Sending a message with an ID of 0x585 will set the on-board LED to change to the value of the first bit (1 = on, 0 = 0ff).
+Sending a message with an ID of 0x585 will set the on-board LED to change to the value of the first bit (`1` = on, `0` = off).
 
 ![CAN Activities](images/can_led.png)
 
