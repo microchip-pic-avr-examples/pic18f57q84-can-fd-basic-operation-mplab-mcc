@@ -96,7 +96,7 @@ The last step is to click the **Generate** button to generate the application co
 ### Interrupt Code
 After using MCC, we have a fully functional API to handle our CAN communication as well as a timer generating an interrupt every 1s. Three functions need to be implemented manually: one for each of the two FIFO interrupts, since they generate an interrupt when they become not empty, and one for the TMR0 1s interrupt.
 
-To do this, create a file named `canfd_interrupts.h`, then add the content below.
+To do this, create a file named `canfd_interrupts.c`, then add the content below.
 
 Since the needed code references the API's CAN objects and PIN definitions for easy access, we need to make sure we can access both.
 ```c
