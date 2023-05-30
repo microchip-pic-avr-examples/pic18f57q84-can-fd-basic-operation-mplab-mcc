@@ -43,7 +43,7 @@
  @struct TMR_INTERFACE
  @brief Declares an instance of TMR_INTERFACE for the Timer0 module
  */
-extern const struct TMR_INTERFACE tmr0;
+extern const struct TMR_INTERFACE timer0;
 
 /**
  * @ingroup tmr0
@@ -52,61 +52,61 @@ extern const struct TMR_INTERFACE tmr0;
  * @param None.
  * @return None.
  */
-void TMR0_Initialize(void);
+void Timer0_Initialize(void);
 
 /**
  * @ingroup tmr0
  * @brief Starts Timer0.
- * @pre Timer0 should be initialized with TMR0_Initialize() before calling this API.
+ * @pre Timer0 should be initialized with Timer0_Initialize() before calling this API.
  * @param None.
  * @return None.
  */
-void TMR0_Start(void);
+void Timer0_Start(void);
 
 /**
  * @ingroup tmr0
  * @brief Stops Timer0.
- * @pre Timer0 should be initialized with TMR0_Initialize() before calling this API.
+ * @pre Timer0 should be initialized with Timer0_Initialize() before calling this API.
  * @param None.
  * @return None.
  */
-void TMR0_Stop(void);
+void Timer0_Stop(void);
 
 /**
  * @ingroup tmr0
  * @brief Reads the 16-bit from the TMR0 register.
- * @pre Timer0 should be initialized with TMR0_Initialize() before calling this API.
+ * @pre Timer0 should be initialized with Timer0_Initialize() before calling this API.
  * @param None.
  * @return 16-bit data from the TMR0 register.
  */
-uint16_t TMR0_Read(void);
+uint16_t Timer0_Read(void);
 
 /**
  * @ingroup tmr0
  * @brief Writes the 16-bit value to the TMR0 register.
- * @pre Timer0 should be initialized with TMR0_Initialize() before calling this API.
+ * @pre Timer0 should be initialized with Timer0_Initialize() before calling this API.
  * @param timerVal - 16-bit value to be written to the TMR0 register.
  * @return None.
  */
-void TMR0_Write(size_t timerVal);
+void Timer0_Write(size_t timerVal);
 
 /**
  * @ingroup tmr0
  * @brief Loads the 16-bit value to the TMR0 register.
- * @pre Timer0 should be initialized with TMR0_Initialize() before calling this API.
+ * @pre Timer0 should be initialized with Timer0_Initialize() before calling this API.
  * @param None.
  * @return None.
  */
-void TMR0_Reload(void);
+void Timer0_Reload(void);
 
 /**
  * @ingroup tmr0
  * @brief Sets the 16-bit period value to global variable timerTMR0ReloadVal16bit.
- * @pre Timer0 should be initialized with TMR0_Initialize() before calling this API.
+ * @pre Timer0 should be initialized with Timer0_Initialize() before calling this API.
  * @param  periodVal - 16-bit period value.
  * @return None.
  */
-void TMR0_PeriodCountSet(size_t periodVal);
+void Timer0_PeriodCountSet(size_t periodVal);
 
 
 /**
@@ -115,7 +115,7 @@ void TMR0_PeriodCountSet(size_t periodVal);
  * @param CallbackHandler - Pointer to the custom callback.
  * @return None.
  */
- void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
+ void Timer0_OverflowCallbackRegister(void (* CallbackHandler)(void));
 
 
 /**

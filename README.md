@@ -18,7 +18,7 @@ Configuring the PIC18 CAN FD Module found in [TB3266 - Basic Configuration of th
 
   - [PIC18F57Q84 Curiosity Nano](https://www.microchip.com/en-us/development-tool/DM182030?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_pic18q84&utm_content=pic18f47q84-can-fd-basic-operation-mplab-mcc&utm_bu=MCU08)
   - [Curiosity Nano Base for Click boards™](https://www.microchip.com/en-us/development-tool/AC164162?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_pic18q84&utm_content=pic18f47q84-can-fd-basic-operation-mplab-mcc&utm_bu=MCU08)
-  - [ATA6563 Click boardd](https://www.mikroe.com/ata6563-click)
+  - [ATA6563 Click board](https://www.mikroe.com/ata6563-click)
   - [K2L OptoLyzer® MOCCA FD](https://www.microchip.com/en-us/tools-resources/develop/k2l-automotive-tools?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_pic18q84&utm_content=pic18f47q84-can-fd-basic-operation-mplab-mcc&utm_bu=MCU08)
 
 ## Setup
@@ -79,7 +79,7 @@ The fifth and final step is the Filter Object settings. This allows for setup of
 ![CAN Config Image 4](images/can_config4.png)
 
 #### Timer0 (TMR0) Configuration
-After setting up CAN, a 1s timer is needed to periodically transmit CAN frames every 1s. Use the TMR0 module to generate an interrupt every 1s. Add the TMR0 module from Device Resources and configure it as follows. Similar to the CAN FIFO interrupts, we will have to manually code the interrupt behavior later.
+After setting up CAN, a 1s timer is needed to periodically transmit CAN frames every 1s. Use the TMR0 module to generate an interrupt every 1s. Add the TMR0 module from Device Resources and configure it as follows. Similar to the CAN FIFO interrupts, we will have to manually implement the interrupt behavior later.
 
 ![TMR0 Setup Image](images/tmr0.png)
 
@@ -98,10 +98,9 @@ After using MCC, we have a fully functional API to handle our CAN communication 
 
 To do this, create a file named `canfd_interrupts.c`, then add the content below.
 
-Since the needed code references the API's CAN objects and PIN definitions for easy access, we need to make sure we can access both.
+Since the needed code references the API's CAN objects and PIN definitions for easy access, including system.h includes all relevant MCC generated headers
 ```c
-#include "mcc_generated_files/can/can1.h"
-#include "mcc_generated_files/system/pins.h"`
+#include "mcc_generated_files/system/system.h"
 ```
 The first FIFO responds to any message that has a message ID of 0x111 by echoing the content back but with a different message ID, 0x222.
 ```c
@@ -112,7 +111,7 @@ void CAN1_FIFO1CustomHandler(void)
     {
         if(CAN1_ReceivedMessageCountGet() > 0) //check for received message
         {
-            if(true == CAN1_Receive(&EchoMessage)) //receive the message
+            if(CAN1_Receive(&EchoMessage)) //receive the message
             {
                 break;
             }
@@ -134,7 +133,7 @@ void CAN1_FIFO2CustomHandler(void)
     {
         if(CAN1_ReceivedMessageCountGet() > 0) //check for received message
         {
-            if(true == CAN1_Receive(&InternalMessage)) //receive the message
+            if(CAN1_Receive(&InternalMessage)) //receive the message
             {
                 break;
             }
@@ -146,7 +145,7 @@ void CAN1_FIFO2CustomHandler(void)
 ```
 TMR0 interrupts every 1s. This interrupt handler sends a message with the content 0x0011223344556677 and a message ID of 0x100.
 ```c
-void TMR0_CustomHandler(void){
+void Timer0_CustomHandler(void){
     struct CAN_MSG_OBJ Transmission;  //create the CAN message object
     uint8_t Transmit_Data[8]={0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77}; // data bytes
     Transmission.field.brs=CAN_BRS_MODE; //Transmit the data bytes at data bit rate
@@ -166,7 +165,7 @@ Create a header file for these functions `canfd_interrupts.h` and include the fu
 ```c
 void CAN1_FIFO1CustomHandler(void);
 void CAN1_FIFO2CustomHandler(void);
-void TMR0_CustomHandler(void);
+void Timer0_CustomHandler(void);
 ```
 
 Finally, add a couple of lines to the main function in `main.c`. First, `SYSTEM_Initialize()` runs the MCC generated code that sets all the neccessary registers and Configuration bits for configuring the clock, pins, CAN, timers, etc. Next, after interrupts are enabled, access the MCC generated functions that assign the function pointers for each of the relevant interrupt callbacks so they can access the custom functions.
@@ -184,7 +183,7 @@ int main(void)
     // Enable the Global Low Interrupts 
     INTERRUPT_GlobalInterruptLowEnable(); 
 
-    TMR0_OverflowCallbackRegister(TMR0_CustomHandler);
+    Timer0_OverflowCallbackRegister(Timer0_CustomHandler);
     
     CAN1_FIFO1NotEmptyCallbackRegister(CAN1_FIFO1CustomHandler);
     CAN1_FIFO2NotEmptyCallbackRegister(CAN1_FIFO2CustomHandler);
@@ -194,7 +193,7 @@ int main(void)
     }    
 }
 ```
-The configuration of the project is now done. Click **Make and Program Device** and the Q84 is ready to send and receive CAN messages. [This guide](https://bitbucket.microchip.com/projects/EBE/repos/pic18f56q71-cnano-adccc-differential-reading-mplab-mcc/browse/README.md?at=3a57907c3485ba069d8631c96d28ff7ce8935456) shows how to make and program a device for the first time if needed.
+The configuration of the project is now done. Click **Make and Program Device** and the Q84 is ready to send and receive CAN messages. [This guide](https://github.com/microchip-pic-avr-examples/pic18f56q71-cnano-adccc-differential-reading-mplab-mcc) shows how to make and program a device for the first time if needed.
 
 ## Operation
 

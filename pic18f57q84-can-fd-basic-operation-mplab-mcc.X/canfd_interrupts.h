@@ -21,4 +21,4 @@
 
 void CAN1_FIFO1CustomHandler(void);
 void CAN1_FIFO2CustomHandler(void);
-void TMR0_CustomHandler(void);
+void Timer0_CustomHandler(void);

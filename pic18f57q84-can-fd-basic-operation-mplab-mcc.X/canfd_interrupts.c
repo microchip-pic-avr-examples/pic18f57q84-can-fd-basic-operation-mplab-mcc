@@ -1,5 +1,4 @@
-#include "mcc_generated_files/can/can1.h"
-#include "mcc_generated_files/system/pins.h"
+#include "mcc_generated_files/system/system.h"
 
 
 void CAN1_FIFO1CustomHandler(void){
@@ -8,7 +7,7 @@ void CAN1_FIFO1CustomHandler(void){
     {
         if(CAN1_ReceivedMessageCountGet() > 0) //check for received message
         {
-            if(true == CAN1_Receive(&EchoMessage)) //receive the message
+            if(CAN1_Receive(&EchoMessage)) //receive the message
             {
                 break;
             }
@@ -28,7 +27,7 @@ void CAN1_FIFO2CustomHandler(void)
     {
         if(CAN1_ReceivedMessageCountGet() > 0) //check for received message
         {
-            if(true == CAN1_Receive(&InternalMessage)) //receive the message
+            if(CAN1_Receive(&InternalMessage)) //receive the message
             {
                 break;
             }
@@ -39,7 +38,7 @@ void CAN1_FIFO2CustomHandler(void)
 }
 
 // Gets called every 1 second
-void TMR0_CustomHandler(void){
+void Timer0_CustomHandler(void){
     struct CAN_MSG_OBJ Transmission;  //create the CAN message object
     uint8_t Transmit_Data[8]={0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77}; // data bytes
     Transmission.field.brs=CAN_BRS_MODE; //Transmit the data bytes at data bit rate

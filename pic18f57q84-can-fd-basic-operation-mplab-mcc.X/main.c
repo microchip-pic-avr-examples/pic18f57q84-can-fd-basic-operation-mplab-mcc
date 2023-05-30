@@ -51,7 +51,7 @@ int main(void)
     // Enable the Global Low Interrupts 
     INTERRUPT_GlobalInterruptLowEnable(); 
 
-    TMR0_OverflowCallbackRegister(TMR0_CustomHandler);
+    Timer0_OverflowCallbackRegister(Timer0_CustomHandler);
     
     CAN1_FIFO1NotEmptyCallbackRegister(CAN1_FIFO1CustomHandler);
     CAN1_FIFO2NotEmptyCallbackRegister(CAN1_FIFO2CustomHandler);

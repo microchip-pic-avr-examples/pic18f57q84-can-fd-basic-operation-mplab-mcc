@@ -10,7 +10,7 @@
         "shortDescription": "An example showing CAN FD operation on the PIC18-Q84 family of MCUs, showing baud rate setup, masks/filters, reception, and transmission using MCC generated code.",
         "ide": {
             "name": "MPLAB X",
-            "semverRange": ">=6.0.5"
+            "semverRange": ">=6.1.0"
         },
         "compiler": [
             {
@@ -20,11 +20,11 @@
         ],
         "dfp": {
             "name": "PIC18F-Q_DFP",
-            "semverRange": "^1.17.378"
+            "semverRange": "^1.17.379"
         },
         "configurator": {
             "name": "MCC",
-            "semverRange": ">=5.5.0"
+            "semverRange": ">=5.5.7"
         },
         "device": {
             "metaDataVersion": "1.0.0",
